@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Student</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --primary-light: #4f6ef2;
+      --secondary-color: #f6f8fd;
+      --accent-color: #00b4d8;
+      --success-color: #2ecc71;
+      --danger-color: #e74a3b;
+      --text-color: #2d3748;
+      --text-light: #718096;
+      --border-color: #e2e8f0;
+      --border-radius: 10px;
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: var(--secondary-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .admin-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    /* Sidebar Styles */
+    .sidebar {
+      width: 260px;
+      min-height: 100vh;
+      background-color: #4361ee;
+      color: white;
+      padding: 20px 0;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-header i {
+      font-size: 2.5rem;
+      margin-right: 12px;
+    }
+
+    .sidebar-title {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-title h1 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background-color: rgba(255, 255, 255, 0.2);
+      margin: 15px 0;
+    }
+
+    .sidebar-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      color: white;
+      text-decoration: none;
+      transition: all 0.3s;
+      border-radius: 0;
+    }
+
+    .sidebar-item:hover,
+    .sidebar-item.active {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 0;
+    }
+
+    .sidebar-item i {
+      font-size: 1.25rem;
+      margin-right: 12px;
+      width: 24px;
+      text-align: center;
+    }
+    
+    /* Signout Button */
+    .signout-container {
+      margin-top: auto;
+      padding: 15px 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .signout-btn {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 12px 15px;
+      color: white;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 500;
+      text-align: left;
+      transition: all 0.3s;
+    }
+    
+    .signout-btn:hover {
+      background-color: #e74a3b;
+    }
+    
+    .signout-btn i {
+      font-size: 1.2rem;
+      margin-right: 10px;
+      width: 24px;
+      text-align: center;
+    }
+    
+    /* Dropdown styles */
+    .sidebar-dropdown {
+      position: relative;
+    }
+    
+    .dropdown-toggle {
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    
+    .dropdown-icon {
+      margin-left: auto;
+      margin-right: 0;
+      transition: transform 0.3s;
+      font-size: 0.8rem;
+    }
+    
+    .dropdown-toggle.active .dropdown-icon {
+      transform: rotate(180deg);
+    }
+    
+    .dropdown-menu {
+      display: none;
+      background-color: rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    
+    .dropdown-menu.show {
+      display: block;
+    }
+    
+    .dropdown-item {
+      display: block;
+      padding: 10px 20px 10px 56px;
+      color: white;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+    
+    .dropdown-item:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+      padding: 20px;
+    }
+    
+    /* Header Section */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .page-title {
+      font-size: 1.875rem;
+      font-weight: 600;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .page-title i {
+      color: var(--primary-color);
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      background-color: white;
+      color: var(--text-color);
+      border-radius: var(--border-radius);
+      text-decoration: none;
+      font-weight: 500;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .back-button:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Form Styles */
+    .form-container {
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
+      padding: 2rem;
+    }
+    
+    .form-header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .form-header h2 {
+      color: var(--text-color);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-header p {
+      color: var(--text-light);
+      font-size: 0.875rem;
+    }
+
+    /* Photo Upload Section */
+    .photo-upload-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2rem;
+      gap: 1rem;
+    }
+
+    .photo-preview {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background-color: var(--secondary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 3px solid var(--primary-color);
+      position: relative;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .photo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-preview i {
+      font-size: 3rem;
+      color: var(--text-light);
+    }
+
+    .photo-upload-btn {
+      position: relative;
+      display: inline-block;
+    }
+
+    .photo-upload-btn input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .photo-upload-btn .btn-upload {
+      padding: 0.75rem 1.5rem;
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .photo-upload-btn .btn-upload:hover {
+      background-color: var(--primary-light);
+      transform: translateY(-1px);
+    }
+
+    .photo-filename {
+      font-size: 0.875rem;
+      color: var(--text-light);
+      text-align: center;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+    
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--text-color);
+      font-size: 0.875rem;
+    }
+    
+    label.required:after {
+      content: " *";
+      color: var(--danger-color);
+    }
+    
+    input, select {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+      background-color: white;
+      font-size: 0.875rem;
+    }
+    
+    input:focus, select:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+    }
+    
+    .button-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+    
+    .btn-cancel {
+      background-color: white;
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+    }
+    
+    .btn-cancel:hover {
+      background-color: var(--secondary-color);
+    }
+    
+    .btn-submit {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-submit:hover {
+      background-color: var(--primary-light);
+      transform: translateY(-1px);
+    }
+
+    /* Form Validation Styles */
+    .form-group.error input {
+      border-color: var(--danger-color);
+    }
+
+    .error-message {
+      color: var(--danger-color);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+
+    .form-group.error .error-message {
+      display: block;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main-content {
+        margin-left: 70px;
+        padding: 1rem;
+      }
+
+      .sidebar {
+        width: 70px;
+        padding: 15px 0;
+      }
+      
+      .sidebar-header {
+        padding: 0 15px;
+        justify-content: center;
+      }
+      
+      .sidebar-title,
+      .sidebar-item span,
+      .dropdown-icon {
+        display: none;
+      }
+      
+      .sidebar-header i {
+        margin-right: 0;
+      }
+      
+      .sidebar-item {
+        justify-content: center;
+        padding: 12px;
+      }
+      
+      .sidebar-item i {
+        margin-right: 0;
+      }
+      
+      .dropdown-item {
+        padding: 12px;
+        text-align: center;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .form-group.full-width {
+        grid-column: span 1;
+      }
+      
+      .button-group {
+        flex-direction: column-reverse;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .form-container {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-graduation-cap"></i>
+        <div class="sidebar-title">
+          <h1>Test</h1>
+          <h1>Platform</h1>
+        </div>
+      </div>
+      <div class="sidebar-divider"></div>
+      <nav class="sidebar-menu">
+        <a href="/admin" class="sidebar-item">
+          <i class="fas fa-home"></i>
+          <span>Dashboard</span>
+        </a>
+        
+        <!-- Students Dropdown -->
+        <div class="sidebar-dropdown">
+          <a href="javascript:void(0)" class="sidebar-item dropdown-toggle">
+            <i class="fas fa-users"></i>
+            <span>Students</span>
+            <i class="fas fa-chevron-down dropdown-icon"></i>
+          </a>
+          <div class="dropdown-menu">
+            <a href="/admin/add-student" class="dropdown-item">Add Students</a>
+            <a href="/admin/students" class="dropdown-item">View Students</a>
+          </div>
+        </div>
+        
+        <!-- Quizzes Dropdown -->
+        <div class="sidebar-dropdown">
+          <a href="javascript:void(0)" class="sidebar-item dropdown-toggle">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Quizzes</span>
+            <i class="fas fa-chevron-down dropdown-icon"></i>
+          </a>
+          <div class="dropdown-menu">
+            <a href="/admin/create-quiz" class="dropdown-item">Create Quiz</a>
+            <a href="/admin/total-quiz" class="dropdown-item">View Quizzes</a>
+          </div>
+        </div>
+      </nav>
+      <div class="signout-container">
+        <button class="signout-btn" onclick="window.location.href='/logout'">
+          <i class="fas fa-sign-out-alt"></i>
+          Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="container">
+        <div class="header">
+          <h1 class="page-title">
+            <i class="fas fa-user-plus"></i>
+            Add New Student
+          </h1>
+          <a href="/admin/students" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            Back to Students
+          </a>
+        </div>
+
+        <div class="form-container">
+          <div class="form-header">
+            <h2>Student Information</h2>
+            <p>Fill in the student details below. All fields marked with * are required.</p>
+          </div>
+
+          <form id="addStudentForm" action="/admin/add-student" method="POST" enctype="multipart/form-data">
+            <div class="photo-upload-container">
+              <div class="photo-preview">
+                <i class="fas fa-user"></i>
+              </div>
+              <div class="photo-upload-btn">
+                <input type="file" name="photo" id="photo" accept="image/*" required>
+                <div class="btn-upload">
+                  <i class="fas fa-camera"></i>
+                  Upload Photo
+                </div>
+              </div>
+              <div class="photo-filename"></div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" required placeholder="Enter student's full name">
+                <div class="error-message">Please enter the student's name</div>
+              </div>
+
+              <div class="form-group">
+                <label for="studentClass">Class *</label>
+                <select id="studentClass" name="studentClass" required>
+                  <option value="">Select a class</option>
+                  <option value="1">Class 1</option>
+                  <option value="2">Class 2</option>
+                  <option value="3">Class 3</option>
+                  <option value="4">Class 4</option>
+                  <option value="5">Class 5</option>
+                  <option value="6">Class 6</option>
+                  <option value="7">Class 7</option>
+                  <option value="8">Class 8</option>
+                  <option value="9">Class 9</option>
+                  <option value="10">Class 10</option>
+                </select>
+                <div class="error-message">Please select a class</div>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required placeholder="Enter email address">
+                <div class="error-message">Please enter a valid email address</div>
+              </div>
+
+              <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                <input type="tel" id="phone" name="phone" required placeholder="Enter phone number">
+                <div class="error-message">Please enter a valid phone number</div>
+              </div>
+
+              <div class="form-group">
+                <label for="dob">Date of Birth *</label>
+                <input type="date" id="dob" name="dob" required>
+                <div class="error-message">Please select the date of birth</div>
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button type="button" class="btn btn-cancel" onclick="window.location.href='/admin/students'">
+                <i class="fas fa-times"></i>
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-submit">
+                <i class="fas fa-check"></i>
+                Add Student
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Photo preview functionality
+    const photoInput = document.getElementById('photo');
+    const photoPreview = document.querySelector('.photo-preview');
+    const photoFilename = document.querySelector('.photo-filename');
+
+    photoInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          photoPreview.innerHTML = `<img src="${e.target.result}" alt="Student Photo">`;
+          photoFilename.textContent = file.name;
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Form validation
+    const form = document.getElementById('addStudentForm');
+    form.addEventListener('submit', function(e) {
+      let isValid = true;
+      const requiredFields = form.querySelectorAll('[required]');
+      
+      requiredFields.forEach(field => {
+        const formGroup = field.closest('.form-group');
+        if (!field.value) {
+          formGroup.classList.add('error');
+          isValid = false;
+        } else {
+          formGroup.classList.remove('error');
+        }
+      });
+
+      if (!isValid) {
+        e.preventDefault();
+      }
+    });
+    
+    // Toggle dropdown menus
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+        
+        dropdownToggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const parent = this.parentElement;
+                const dropdownMenu = parent.querySelector('.dropdown-menu');
+                
+                // Close all other dropdowns
+                document.querySelectorAll('.sidebar-dropdown .dropdown-menu').forEach(menu => {
+                    if (menu !== dropdownMenu) {
+                        menu.classList.remove('show');
+                    }
+                });
+                
+                // Toggle current dropdown
+                dropdownMenu.classList.toggle('show');
+                this.classList.toggle('active');
+            });
+        });
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.sidebar-dropdown')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+                document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+                    toggle.classList.remove('active');
+                });
+            }
+        });
+    });
+  </script>
+</body>
+</html>

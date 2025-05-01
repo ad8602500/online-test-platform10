@@ -1,0 +1,54 @@
+[
+  {
+    "name": "qqq retake",
+    "startTime": "17:30",
+    "endTime": "18:20",
+    "class": "999",
+    "type": "excel",
+    "file": "qqq retake.xlsx",
+    "isStudentSpecific": true
+  },
+  {
+    "name": "manual",
+    "startTime": "10:20",
+    "endTime": "12:00",
+    "class": "10",
+    "type": "excel",
+    "file": "manual.xlsx"
+  },
+  {
+    "name": "manual retake",
+    "startTime": "10:20",
+    "endTime": "12:00",
+    "class": "999",
+    "type": "excel",
+    "isStudentSpecific": true,
+    "file": "manual.xlsx"
+  },
+  {
+    "name": "444",
+    "startTime": "10:30",
+    "endTime": "12:00",
+    "class": "10",
+    "type": "excel",
+    "file": "444.xlsx"
+  },
+  {
+    "name": "444re",
+    "startTime": "10:30",
+    "endTime": "12:00",
+    "class": "999",
+    "type": "excel",
+    "isStudentSpecific": true,
+    "file": "444.xlsx"
+  },
+  {
+    "name": "444 retake quiz",
+    "startTime": "10:30",
+    "endTime": "12:00",
+    "class": "999",
+    "type": "excel",
+    "isStudentSpecific": true,
+    "file": "444.xlsx"
+  }
+]

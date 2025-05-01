@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --success-color: #4cc9f0;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            min-height: 100vh;
+            background-color: #4361ee;
+            color: white;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-header i {
+            font-size: 2.5rem;
+            margin-right: 12px;
+        }
+        
+        .sidebar-title {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-title h1 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        
+        .sidebar-divider {
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.2);
+            margin: 15px 0;
+        }
+        
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-radius: 0;
+        }
+        
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 0;
+        }
+        
+        .sidebar-item i {
+            font-size: 1.25rem;
+            margin-right: 12px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* Signout Button */
+        .signout-container {
+            margin-top: auto;
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .signout-btn {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            padding: 12px 15px;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            transition: all 0.3s;
+        }
+        
+        .signout-btn:hover {
+            background-color: #e74a3b;
+        }
+        
+        .signout-btn i {
+            font-size: 1.2rem;
+            margin-right: 10px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* Dropdown styles */
+        .sidebar-dropdown {
+            position: relative;
+        }
+        
+        .dropdown-toggle {
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        
+        .dropdown-icon {
+            margin-left: auto;
+            margin-right: 0;
+            transition: transform 0.3s;
+            font-size: 0.8rem;
+        }
+        
+        .dropdown-toggle.active .dropdown-icon {
+            transform: rotate(180deg);
+        }
+        
+        .dropdown-menu {
+            display: none;
+            background-color: rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .dropdown-menu.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: block;
+            padding: 10px 20px 10px 56px;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-message {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .user-info i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .students {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+        }
+
+        .quizzes {
+            background: linear-gradient(135deg, #4cc9f0, #4895ef);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .card-text {
+            color: var(--gray-color);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn:not(.btn-outline) {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .btn:not(.btn-outline):hover {
+            background: var(--secondary-color);
+        }
+        
+        /* Current page styling */
+        .sidebar-item[href="/admin"] {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                padding: 15px 0;
+            }
+            
+            .sidebar-header {
+                padding: 0 15px;
+                justify-content: center;
+            }
+            
+            .sidebar-title,
+            .sidebar-item span {
+                display: none;
+            }
+            
+            .sidebar-header i {
+                margin-right: 0;
+            }
+            
+            .sidebar-item {
+                justify-content: center;
+                padding: 12px;
+            }
+            
+            .sidebar-item i {
+                margin-right: 0;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .welcome-message {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .welcome-message {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-graduation-cap"></i>
+                <div class="sidebar-title">
+                    <h1>Test</h1>
+                    <h1>Platform</h1>
+                </div>
+            </div>
+            <div class="sidebar-divider"></div>
+            <nav class="sidebar-menu">
+                <a href="/admin" class="sidebar-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                
+                <!-- Students Dropdown -->
+                <div class="sidebar-dropdown">
+                    <a href="javascript:void(0)" class="sidebar-item dropdown-toggle">
+                    <i class="fas fa-users"></i>
+                    <span>Students</span>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                    </a>
+                    <div class="dropdown-menu">
+                        <a href="/admin/add-student" class="dropdown-item">Add Students</a>
+                        <a href="/admin/students" class="dropdown-item">View Students</a>
+                    </div>
+                </div>
+                
+                <!-- Quizzes Dropdown -->
+                <div class="sidebar-dropdown">
+                    <a href="javascript:void(0)" class="sidebar-item dropdown-toggle">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Quizzes</span>
+                        <i class="fas fa-chevron-down dropdown-icon"></i>
+                </a>
+                    <div class="dropdown-menu">
+                        <a href="/admin/create-quiz" class="dropdown-item">Create Quiz</a>
+                        <a href="/admin/total-quiz" class="dropdown-item">View Quizzes</a>
+                    </div>
+                </div>
+                
+                <!-- Messages -->
+                <a href="/admin/messages" class="sidebar-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>Student Messages</span>
+                </a>
+            </nav>
+            <div class="signout-container">
+                <a href="/admin/logout" class="signout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sign Out</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="header">
+                <h1 class="welcome-message">Welcome, Admin!</h1>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Administrator</span>
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon students">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h2 class="card-title">Student Management</h2>
+                    </div>
+                    <p class="card-text">Add new students, view existing students, and manage student information for your online test platform.</p>
+                    <div class="action-buttons">
+                        <a href="/admin/add-student" class="btn">Add Student</a>
+                        <a href="/admin/students" class="btn btn-outline">View Students</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon quizzes">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <h2 class="card-title">Quiz Management</h2>
+                    </div>
+                    <p class="card-text">Create new quizzes, set time limits, and track student performance through the quiz system.</p>
+                    <div class="action-buttons">
+                        <a href="/admin/create-quiz" class="btn">Create Quiz</a>
+                        <a href="/admin/total-quiz" class="btn btn-outline">View Quizzes</a>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon quizzes" style="background: linear-gradient(135deg, #e74a3b, #c0392b);">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h2 class="card-title">Student-Specific Quiz</h2>
+                    </div>
+                    <p class="card-text">Create quizzes for specific students regardless of their class. Perfect for retakes or special assessments.</p>
+                    <div class="action-buttons">
+                        <a href="/admin/retake-quiz" class="btn" style="background: #e74a3b; color: white;">Create</a>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon quizzes" style="background: linear-gradient(135deg, #10b981, #047857);">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h2 class="card-title">Student Messages</h2>
+                    </div>
+                    <p class="card-text">View and respond to student messages about quiz issues. Handle retake requests and technical problems.</p>
+                    <div class="action-buttons">
+                        <a href="/admin/messages" class="btn" style="background: #10b981; color: white;">View Messages</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Toggle dropdown menus
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+            
+            dropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', function() {
+                    const parent = this.parentElement;
+                    const dropdownMenu = parent.querySelector('.dropdown-menu');
+                    
+                    // Close all other dropdowns
+                    document.querySelectorAll('.sidebar-dropdown .dropdown-menu').forEach(menu => {
+                        if (menu !== dropdownMenu) {
+                            menu.classList.remove('show');
+                        }
+                    });
+                    
+                    // Toggle current dropdown
+                    dropdownMenu.classList.toggle('show');
+                    this.classList.toggle('active');
+                });
+            });
+            
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!event.target.closest('.sidebar-dropdown')) {
+                    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                        menu.classList.remove('show');
+                    });
+                    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+                        toggle.classList.remove('active');
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

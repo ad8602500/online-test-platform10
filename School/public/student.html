@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --primary-light: #4f6ef2;
+      --primary-gradient: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+      --secondary-color: #f6f8fd;
+      --accent-color: #00b4d8;
+      --active-color: #6366f1;
+      --active-gradient: linear-gradient(135deg, #818cf8 0%, #6366f1 100%);
+      --completed-color: #10b981;
+      --completed-gradient: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      --text-color: #2d3748;
+      --text-light: #718096;
+      --border-color: #e2e8f0;
+      --border-radius: 12px;
+      --shadow-sm: 0 2px 8px rgba(67, 97, 238, 0.07);
+      --shadow-md: 0 4px 12px rgba(67, 97, 238, 0.1);
+      --shadow-lg: 0 8px 24px rgba(67, 97, 238, 0.15);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #f6f8fd 0%, #ffffff 100%);
+      color: var(--text-color);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .student-profile {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(67, 97, 238, 0.1);
+      position: relative;
+      overflow: hidden;
+      justify-content: space-between;
+    }
+
+    .student-profile::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--primary-gradient);
+    }
+
+    .student-profile-info {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .profile-photo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+      transition: var(--transition);
+    }
+
+    .profile-photo:hover {
+      transform: scale(1.05);
+    }
+
+    #studentName {
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin: 0;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Sign Out Button */
+    .signout-btn {
+      display: flex;
+      align-items: center;
+      padding: 0.6rem 1.2rem;
+      color: white;
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s;
+      box-shadow: var(--shadow-sm);
+      text-decoration: none;
+    }
+    
+    .signout-btn:hover {
+      background-color: #e74a3b;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .signout-btn i {
+      font-size: 1rem;
+      margin-right: 8px;
+    }
+
+    /* Action buttons container */
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      position: relative;
+      margin-left: auto;
+    }
+    
+    /* Message button */
+    .message-btn {
+      display: flex;
+      align-items: center;
+      padding: 0.6rem 1.2rem;
+      color: white;
+      background-color: var(--primary-color);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.3s;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .message-btn:hover {
+      background-color: var(--completed-color);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .message-btn i {
+      font-size: 1rem;
+      margin-right: 8px;
+    }
+
+    .tables-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .table-section {
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
+      padding: 1.5rem;
+      border: 1px solid rgba(67, 97, 238, 0.1);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .table-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .table-section:first-child::before {
+      background: var(--active-gradient);
+    }
+
+    .table-section:last-child::before {
+      background: var(--completed-gradient);
+    }
+
+    .table-section:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .table-section:first-child h3 i {
+      color: var(--active-color);
+    }
+
+    .table-section:last-child h3 i {
+      color: var(--completed-color);
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--border-color);
+      border-radius: var(--border-radius);
+      font-size: 0.875rem;
+      transition: var(--transition);
+      margin-bottom: 1rem;
+    }
+
+    .search-input:focus {
+      outline: none;
+    }
+
+    .table-section:first-child .search-input:focus {
+      border-color: var(--active-color);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .table-section:last-child .search-input:focus {
+      border-color: var(--completed-color);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-bottom: 1rem;
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      font-weight: 600;
+      color: white;
+      position: relative;
+    }
+
+    .table-section:first-child th {
+      background: var(--active-gradient);
+    }
+
+    .table-section:last-child th {
+      background: var(--completed-gradient);
+    }
+
+    th:first-child {
+      border-top-left-radius: var(--border-radius);
+    }
+
+    th:last-child {
+      border-top-right-radius: var(--border-radius);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .quiz-row {
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .table-section:first-child .quiz-row:hover {
+      background: linear-gradient(to right, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.1));
+      transform: translateX(5px);
+    }
+
+    .table-section:last-child .quiz-row:hover {
+      background: linear-gradient(to right, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.1));
+      transform: translateX(5px);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .active-badge {
+      background: var(--active-gradient);
+      color: white;
+    }
+
+    .completed-badge {
+      background: var(--completed-gradient);
+      color: white;
+    }
+
+    .no-quizzes {
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-light);
+      font-style: italic;
+      border-radius: var(--border-radius);
+      margin-top: 1rem;
+    }
+
+    .table-section:first-child .no-quizzes {
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    .table-section:last-child .no-quizzes {
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      .tables-container {
+        grid-template-columns: 1fr;
+      }
+
+      .table-section {
+        min-width: unset;
+        overflow-x: auto;
+      }
+
+      .student-profile {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+      }
+
+      #studentName {
+        font-size: 1.5rem;
+      }
+
+      .profile-photo {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="student-profile">
+      <div class="student-profile-info">
+        <img id="studentPhoto" src="" alt="Student Photo" class="profile-photo" 
+             onerror="this.onerror=null;this.src='/default-profile.jpg';this.style.border='none'">
+        <div id="studentName">Loading...</div>
+      </div>
+
+      <div class="action-buttons">
+        <a href="/student/messages" class="message-btn">
+          <i class="fas fa-envelope"></i>
+          Report Quiz Issue
+        </a>
+        <a href="/logout" class="signout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          Sign Out
+        </a>
+      </div>
+    </div>
+
+    <div class="tables-container">
+      <div class="table-section">
+        <div class="table-header">
+          <h3><i class="fas fa-clock"></i> Today's Tests</h3>
+          <span class="status-badge active-badge">Active</span>
+        </div>
+        <input type="text" class="search-input" placeholder="Search quiz names..." oninput="filterTable('todayTable', this.value)">
+        <table id="todayTable">
+          <thead>
+            <tr>
+              <th>Quiz Name</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamic content -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-section">
+        <div class="table-header">
+          <h3><i class="fas fa-check-circle"></i> Attempted Tests</h3>
+          <span class="status-badge completed-badge">Completed</span>
+        </div>
+        <input type="text" class="search-input" placeholder="Search attempted quizzes..." oninput="filterTable('attemptedTable', this.value)">
+        <table id="attemptedTable">
+          <thead>
+            <tr>
+              <th>Quiz Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Dynamic content -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('/student/info')
+        .then(res => {
+          if (!res.ok) throw new Error('Network response was not ok');
+          return res.json();
+        })
+        .then(data => {
+          console.log('Student info response:', data); // Debug log
+          
+          if (data.name) {
+            document.getElementById('studentName').textContent = data.name;
+          }
+          
+          if (data.photo) {
+            const img = document.getElementById('studentPhoto');
+            // Prepend a forward slash if not present
+            const photoPath = data.photo.startsWith('/') ? data.photo : `/${data.photo}`;
+            img.src = photoPath;
+            
+            img.onerror = () => {
+              console.error('Failed to load student photo:', photoPath);
+              img.src = '/default-profile.jpg';
+              img.style.border = 'none';
+            };
+          }
+        })
+        .catch(err => {
+          console.error('Error loading student info:', err);
+          document.getElementById('studentPhoto').src = '/default-profile.jpg';
+        });
+    });
+
+    let allQuizzes = [];
+    let attemptedQuizzes = [];
+    const todayTbody = document.querySelector('#todayTable tbody');
+    const attemptedTbody = document.querySelector('#attemptedTable tbody');
+    const todaySearchInput = document.querySelector('.search-input[placeholder="Search quiz names..."]');
+    const attemptedSearchInput = document.querySelector('.search-input[placeholder="Search attempted quizzes..."]');
+
+    function renderTodayQuizzes(quizzes) {
+      todayTbody.innerHTML = '';
+
+      // Check for completed quizzes in both session storage and attempted list
+      fetch('/student/check-completed-quizzes')
+        .then(res => res.json())
+        .then(sessionCompletedQuizzes => {
+          // Combine both sources of completed quizzes
+          const completedQuizNames = [
+            ...attemptedQuizzes.map(a => a.quizName),
+            ...sessionCompletedQuizzes
+          ];
+          
+          // Filter out quizzes that have been completed
+          const availableQuizzes = quizzes.filter(quiz => {
+            return !completedQuizNames.includes(quiz.name);
+          });
+
+          if (availableQuizzes.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="3" class="no-quizzes">No available quizzes found.</td>`;
+            todayTbody.appendChild(row);
+          } else {
+            availableQuizzes.forEach(quiz => {
+              const row = document.createElement('tr');
+              row.classList.add("quiz-row");
+              row.innerHTML = `
+                <td>${quiz.name}</td>
+                <td>${quiz.startTime}</td>
+                <td>${quiz.endTime}</td>
+              `;
+              row.addEventListener('click', () => {
+                const encodedName = encodeURIComponent(quiz.name);
+                window.location.href = '/student/quiz/' + encodedName;
+              });
+              todayTbody.appendChild(row);
+            });
+          }
+        })
+        .catch(err => {
+          console.error('Error fetching completed quizzes:', err);
+          // Fallback to only using attempted quizzes
+          const availableQuizzes = quizzes.filter(quiz => {
+            return !attemptedQuizzes.some(attempt => attempt.quizName === quiz.name);
+          });
+          
+          if (availableQuizzes.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="3" class="no-quizzes">No available quizzes found.</td>`;
+            todayTbody.appendChild(row);
+          } else {
+            availableQuizzes.forEach(quiz => {
+              const row = document.createElement('tr');
+              row.classList.add("quiz-row");
+              row.innerHTML = `
+                <td>${quiz.name}</td>
+                <td>${quiz.startTime}</td>
+                <td>${quiz.endTime}</td>
+              `;
+              row.addEventListener('click', () => {
+                const encodedName = encodeURIComponent(quiz.name);
+                window.location.href = '/student/quiz/' + encodedName;
+              });
+              todayTbody.appendChild(row);
+            });
+          }
+        });
+    }
+
+    function renderAttemptedQuizzes(attempts = attemptedQuizzes) {
+      attemptedTbody.innerHTML = '';
+
+      if (attempts.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="1" class="no-quizzes">No attempted quizzes yet.</td>`;
+        attemptedTbody.appendChild(row);
+      } else {
+        attempts.forEach(attempt => {
+          const row = document.createElement('tr');
+          row.classList.add("quiz-row");
+          row.innerHTML = `
+            <td>${attempt.quizName}</td>
+          `;
+          row.addEventListener('click', () => {
+            const encodedName = encodeURIComponent(attempt.quizName);
+            window.location.href = '/student/result/' + encodedName;
+          });
+          attemptedTbody.appendChild(row);
+        });
+      }
+    }
+
+    // Fetch quizzes
+    Promise.all([
+      fetch('/student/quizzes').then(res => res.json()),
+      fetch('/student/attempts').then(res => res.json())
+    ])
+    .then(([quizzes, attempts]) => {
+      allQuizzes = quizzes;
+      attemptedQuizzes = attempts;
+      
+      renderTodayQuizzes(allQuizzes);
+      renderAttemptedQuizzes(attemptedQuizzes);
+    })
+    .catch(err => {
+      console.error('Error loading data:', err);
+      todayTbody.innerHTML = `<tr><td colspan="3" style="color: red;">Error loading quizzes</td></tr>`;
+      attemptedTbody.innerHTML = `<tr><td colspan="1" style="color: red;">Error loading attempts</td></tr>`;
+    });
+
+    // Search filter for Today's Quizzes
+    todaySearchInput.addEventListener('input', () => {
+      const searchTerm = todaySearchInput.value.toLowerCase();
+      
+      // First get the completed quizzes from session
+      fetch('/student/check-completed-quizzes')
+        .then(res => res.json())
+        .then(sessionCompletedQuizzes => {
+          // Combine both sources of completed quizzes
+          const completedQuizNames = [
+            ...attemptedQuizzes.map(a => a.quizName),
+            ...sessionCompletedQuizzes
+          ];
+          
+          // Filter quizzes that match search term and aren't completed
+          const filtered = allQuizzes.filter(q => 
+            q.name.toLowerCase().includes(searchTerm) &&
+            !completedQuizNames.includes(q.name)
+          );
+          
+          renderTodayQuizzes(filtered);
+        })
+        .catch(err => {
+          console.error('Error fetching completed quizzes for search:', err);
+          // Fallback to only using attempted quizzes
+          const filtered = allQuizzes.filter(q => 
+            q.name.toLowerCase().includes(searchTerm) &&
+            !attemptedQuizzes.some(attempt => attempt.quizName === q.name)
+          );
+          renderTodayQuizzes(filtered);
+        });
+    });
+
+    // Search filter for Attempted Quizzes
+    attemptedSearchInput.addEventListener('input', () => {
+      const searchTerm = attemptedSearchInput.value.toLowerCase();
+      const filtered = attemptedQuizzes.filter(attempt => 
+        attempt.quizName.toLowerCase().includes(searchTerm)
+      );
+      renderAttemptedQuizzes(filtered);
+    });
+
+  </script>
+</body>
+</html>

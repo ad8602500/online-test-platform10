@@ -13,30 +13,29 @@ const adminRoutes = require('./routes/admin');
 const studentRoutes = require('./routes/student');
 const startQuizRoutes = require('./routes/startquiz');
 
-const url = "mongodb+srv://vajraOnlineTest:vajra@vajrafiles.qex2ed7.mongodb.net/?retryWrites=true&w=majority&appName=VajraFiles";
-let dbo;
-let mongoClient = null;
+// Use environment variables for sensitive data
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://vajraOnlineTest:vajra@vajrafiles.qex2ed7.mongodb.net/School?retryWrites=true&w=majority&appName=VajraFiles";
+const SESSION_SECRET = process.env.SESSION_SECRET || 'your-secret-key-here-please-change-this';
 
-// MongoDB connection options
+// Modified MongoDB connection options that work with Render's environment
 const mongoOptions = {
     maxPoolSize: 10,
-    serverSelectionTimeoutMS: 5000,
+    serverSelectionTimeoutMS: 30000,
     socketTimeoutMS: 45000,
     family: 4,
+    ssl: true,
     tls: true,
     tlsAllowInvalidCertificates: false,
-    tlsAllowInvalidHostnames: false
+    tlsAllowInvalidHostnames: false,
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 };
 
-// Set max listeners to prevent memory leak warnings
-require('events').EventEmitter.defaultMaxListeners = 30;
-
-// Create MongoDB stores for sessions with proper event handling
+// Update the MongoStore creation to use the proper options
 const createMongoStore = (collectionName) => {
     const store = MongoStore.create({
-        mongoUrl: url,
+        mongoUrl: MONGODB_URI,
         mongoOptions: mongoOptions,
-        dbName: 'School',
         collectionName: collectionName,
         ttl: 24 * 60 * 60,
         touchAfter: 60,
@@ -48,22 +47,20 @@ const createMongoStore = (collectionName) => {
         }
     });
     
-    // Explicitly set max listeners on the store instance
     store.setMaxListeners(30);
-    
     return store;
 }
 
 // Create separate session configurations for admin and student apps
 const createSessionConfig = (name) => ({
-    secret: `your-secret-key-here-please-change-this-${name}`,
+    secret: `${SESSION_SECRET}-${name}`,
     resave: false,
     saveUninitialized: true,
     store: createMongoStore(`sessions_${name}`),
     cookie: {
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
         httpOnly: true,
-        secure: false,
+        secure: process.env.NODE_ENV === 'production', // true in production
         sameSite: 'lax'
     },
     name: `session.id.${name}`
@@ -254,7 +251,7 @@ setupApp(adminApp, 'admin');
 setupApp(userApp, 'student');
 
 // MongoDB connection
-MongoClient.connect(url, mongoOptions)
+MongoClient.connect(MONGODB_URI, mongoOptions)
     .then(client => {
         mongoClient = client; // Store the client for proper cleanup later
         dbo = client.db("School");
@@ -772,7 +769,7 @@ function reconnectToMongoDB() {
         }
     }
     
-    MongoClient.connect(url, mongoOptions)
+    MongoClient.connect(MONGODB_URI, mongoOptions)
         .then(client => {
             mongoClient = client;
             dbo = client.db("School");

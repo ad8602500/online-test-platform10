@@ -23,13 +23,12 @@ const mongoOptions = {
     serverSelectionTimeoutMS: 30000,
     socketTimeoutMS: 45000,
     family: 4,
-    ssl: true,
-    tls: true,
+    tls: true, // use tls instead of ssl
     tlsAllowInvalidCertificates: false,
     tlsAllowInvalidHostnames: false,
     useNewUrlParser: true,
     useUnifiedTopology: true
-};
+  };
 
 // Update the MongoStore creation to use the proper options
 const createMongoStore = (collectionName) => {

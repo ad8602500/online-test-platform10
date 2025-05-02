@@ -122,119 +122,50 @@ router.get('/quizzes', (req, res) => {
         }
     }
     
-    // Also check session-stored completions (in case file hasn't been updated yet)
+    // Also check session-stored completions
     const sessionCompletedQuizzes = (req.session.completedQuizzes || [])
         .map(quiz => quiz.quizName);
     
     // Combine both sources of completed quizzes
     const completedQuizNames = [...new Set([...attemptedQuizzes, ...sessionCompletedQuizzes])];
     
-    // Check all available retake quizzes for this student
-    const RETAKE_DIR = path.join(__dirname, '../retakes');
-    const retakeQuizzes = [];
-    
-    if (fs.existsSync(RETAKE_DIR)) {
-        try {
-            const retakeFiles = fs.readdirSync(RETAKE_DIR);
-            for (const retakeFile of retakeFiles) {
-                if (retakeFile.endsWith('.json')) {
-                    const quizName = retakeFile.replace('.json', '').replace(/_/g, ' ');
-                    const retakeFilePath = path.join(RETAKE_DIR, retakeFile);
-                    const retakeData = JSON.parse(fs.readFileSync(retakeFilePath, 'utf8'));
-                    
-                    if (retakeData.includes(studentUsername)) {
-                        retakeQuizzes.push(quizName);
-                    }
-                }
+    try {
+        const quizzes = readQuizzes();
+        const now = new Date();
+        const currentTime = now.getHours().toString().padStart(2, '0') + ":" + 
+                          now.getMinutes().toString().padStart(2, '0');
+
+        // Filter quizzes for the student's class and check time
+        const availableQuizzes = quizzes.filter(quiz => {
+            // Check if quiz is for student's class
+            if (quiz.class !== studentClass) {
+                return false;
             }
-        } catch (err) {
-            console.error("Failed to read retake directory:", err);
-        }
-    }
-    
-    fs.readFile(QUIZ_FILE, 'utf-8', (err, data) => {
-        if (err) {
-            console.error("Failed to read quizzes file:", err);
-            return res.status(500).json({ error: "Failed to load quizzes." });
-        }
-        try {
-            const quizzes = JSON.parse(data);
-            // Filter quizzes by student's class, active time window, and not attempted
-            const now = new Date();
-            const filteredQuizzes = quizzes.filter(q => {
-                // First, check if this is a retake quiz specifically assigned to this student
-                if (retakeQuizzes.includes(q.name)) {
-                    // Only need to check time window for retake quizzes
-                    const [startHour, startMinute] = q.startTime.split(':').map(Number);
-                    const [endHour, endMinute] = q.endTime.split(':').map(Number);
-                    
-                    const quizStart = new Date();
-                    quizStart.setHours(startHour, startMinute, 0, 0);
-                    
-                    const quizEnd = new Date();
-                    quizEnd.setHours(endHour, endMinute, 0, 0);
-                    
-                    return now >= quizStart && now <= quizEnd;
-                }
-                
-                // For student-specific quizzes (class 999), check if specifically assigned to this student
-                if (q.isStudentSpecific || q.class === '999') {
-                    // Check if in retake list for this quiz
-                    const retakeFilePath = path.join(RETAKE_DIR, `${q.name.replace(/\s+/g, '_')}.json`);
-                    if (fs.existsSync(retakeFilePath)) {
-                        try {
-                            const retakeData = JSON.parse(fs.readFileSync(retakeFilePath, 'utf8'));
-                            if (retakeData.includes(studentUsername)) {
-                                // Check time window
-                                const [startHour, startMinute] = q.startTime.split(':').map(Number);
-                                const [endHour, endMinute] = q.endTime.split(':').map(Number);
-                                
-                                const quizStart = new Date();
-                                quizStart.setHours(startHour, startMinute, 0, 0);
-                                
-                                const quizEnd = new Date();
-                                quizEnd.setHours(endHour, endMinute, 0, 0);
-                                
-                                return now >= quizStart && now <= quizEnd;
-                            }
-                        } catch (err) {
-                            console.error("Failed to read retake file:", err);
-                        }
-                    }
-                    return false;
-                }
-                
-                // If not a retake, check normal eligibility
-                
-                // Skip if already completed 
-                if (completedQuizNames.includes(q.name)) {
-                    return false;
-                }
-                
-                // Check if quiz is for student's class
-                if (q.class !== studentClass) {
-                    return false;
-                }
-                
-                // Check if quiz is within active time window
-                const [startHour, startMinute] = q.startTime.split(':').map(Number);
-                const [endHour, endMinute] = q.endTime.split(':').map(Number);
-                
-                const quizStart = new Date();
-                quizStart.setHours(startHour, startMinute, 0, 0);
-                
-                const quizEnd = new Date();
-                quizEnd.setHours(endHour, endMinute, 0, 0);
-                
-                return now >= quizStart && now <= quizEnd;
-            });
+
+            // Check if quiz is already completed
+            if (completedQuizNames.includes(quiz.name)) {
+                return false;
+            }
+
+            // Check quiz time
+            const [startHour, startMinute] = quiz.startTime.split(':');
+            const [endHour, endMinute] = quiz.endTime.split(':');
             
-            res.json(filteredQuizzes.slice(-10).reverse()); // latest 10
-        } catch (parseErr) {
-            console.error("Failed to parse quizzes JSON:", parseErr);
-            res.status(500).json({ error: "Invalid JSON format." });
-        }
-    });
+            const quizStart = new Date();
+            quizStart.setHours(parseInt(startHour), parseInt(startMinute), 0, 0);
+            
+            const quizEnd = new Date();
+            quizEnd.setHours(parseInt(endHour), parseInt(endMinute), 0, 0);
+            
+            // Quiz is available if current time is between start and end time
+            return now >= quizStart && now <= quizEnd;
+        });
+
+        res.json(availableQuizzes);
+    } catch (err) {
+        console.error('Error fetching quizzes:', err);
+        res.status(500).json({ error: 'Failed to fetch quizzes' });
+    }
 });
 
 // New route to update completed quizzes from sessionStorage

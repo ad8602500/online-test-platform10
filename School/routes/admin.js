@@ -1821,14 +1821,21 @@ router.post('/create-quiz', (req, res) => {
         throw new Error('No Excel file uploaded');
       }
 
+      // Format times to ensure consistent format (HH:MM)
+      const formatTime = (time) => {
+        const [hours, minutes] = time.split(':');
+        return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+      };
+
       // Add quiz to quizzes.json
       const quiz = {
         name: quizName,
-        startTime: startTime,
-        endTime: endTime,
+        startTime: formatTime(startTime),
+        endTime: formatTime(endTime),
         class: quizClass,
         type: 'excel',
-        file: req.file.filename
+        file: req.file.filename,
+        status: 'active' // Add status field
       };
 
       quizzes.push(quiz);
